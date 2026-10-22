@@ -11,10 +11,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pw = (string)($_POST['password'] ?? '');
 
     if ($setup) {
-        if (strlen($pw) < 10) $error = 'Use at least 10 characters.';
+        $email = trim((string)($_POST['email'] ?? ''));
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $error = 'Enter a valid email address.';
+        elseif (strlen($pw) < 10) $error = 'Use at least 10 characters.';
         elseif ($pw !== ($_POST['confirm'] ?? '')) $error = 'The passwords do not match.';
         else {
-            write_json(ADMIN_FILE, ['hash' => password_hash($pw, PASSWORD_DEFAULT), 'created' => date('c')]);
+            write_json(ADMIN_FILE, ['email' => $email, 'hash' => password_hash($pw, PASSWORD_DEFAULT), 'created' => date('c')]);
             session_regenerate_id(true);
             $_SESSION['admin'] = true;
             header('Location: index.php'); exit;
@@ -23,7 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $log = array_filter(read_json(LOGIN_LOG), fn($t) => $t > time() - 900);
         if (count($log) >= 5) {
             $error = 'Too many attempts. Try again in 15 minutes.';
-        } elseif (password_verify($pw, (string)read_json(ADMIN_FILE)['hash'])) {
+        } elseif (strcasecmp(trim((string)($_POST['email'] ?? '')), (string)(read_json(ADMIN_FILE)['email'] ?? '')) === 0
+                  && password_verify($pw, (string)read_json(ADMIN_FILE)['hash'])) {
             write_json(LOGIN_LOG, []);
             session_regenerate_id(true);
             $_SESSION['admin'] = true;
@@ -32,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $log[] = time();
             write_json(LOGIN_LOG, array_values($log));
             sleep(1);
-            $error = 'Incorrect password.';
+            $error = 'Incorrect email or password.';
         }
     }
 }
@@ -46,10 +49,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head><body class="login">
 <form class="box" method="post" autocomplete="off">
 <h1><?= t('site', 'name') ?></h1>
-<p><?= $setup ? 'First-time setup: choose an admin password.' : 'Sign in to edit the website.' ?></p>
+<p><?= $setup ? 'First-time setup: enter your email and choose a password.' : 'Sign in to edit the website.' ?></p>
 <?php if ($error): ?><div class="alert err"><?= e($error) ?></div><?php endif; ?>
 <?= csrf_field() ?>
-<label>Password<input type="password" name="password" required autofocus autocomplete="<?= $setup ? 'new-password' : 'current-password' ?>"></label>
+<label>Email<input type="email" name="email" required autofocus autocomplete="username"></label>
+<label>Password<input type="password" name="password" required autocomplete="<?= $setup ? 'new-password' : 'current-password' ?>"></label>
 <?php if ($setup): ?><label>Confirm password<input type="password" name="confirm" required autocomplete="new-password"></label><?php endif; ?>
 <button class="btn" type="submit"><?= $setup ? 'Create password' : 'Sign in' ?></button>
 <p class="back"><a href="../index.php">← Back to website</a></p>

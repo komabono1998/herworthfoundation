@@ -5,10 +5,19 @@ const NAV = [
     'index.php'    => 'Home',
     'about.php'    => 'About',
     'programs.php' => 'What We Do',
-    'event.php'    => 'Menstrual Hygiene Run',
+    'events.php'   => 'Events',
     'news.php'     => 'News',
     'partners.php' => 'Partners',
-    'contact.php'  => 'Get Involved',
+    'get-involved.php' => 'Get Involved',
+];
+
+/** Pages that live under Get Involved (highlight the parent tab). */
+const INVOLVE_PAGES = [
+    'get-involved.php' => 'Overview',
+    'volunteer.php'    => 'Volunteer',
+    'careers.php'      => 'Careers',
+    'donate.php'       => 'Donate',
+    'contact.php'      => 'Contact us',
 ];
 
 const SOCIALS = [
@@ -27,6 +36,8 @@ function icon(string $name): string
         'pin'       => '<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
         'phone'     => '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
         'mail'      => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+        'calendar'  => '<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+        'user'      => '<circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/>',
         'clock'     => '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
         'facebook'  => '<path d="M14 8.5h2V4.5h-2.5A3.5 3.5 0 0 0 10 8v2H8v3.5h2V20h3.5v-6.5H16l.5-3.5h-3V8.5"/>',
         'instagram' => '<rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6"/>',
@@ -104,20 +115,52 @@ function head(string $file, string $title, string $desc = ''): void
 <?= brand_html() ?>
 <nav aria-label="Main"><ul>
 <?php foreach (NAV as $href => $label): ?>
-<li><a href="<?= $href ?>"<?= $href === $file ? ' aria-current="page"' : '' ?>><?= e($label) ?></a></li>
+<?php $active = ($href === 'get-involved.php' && isset(INVOLVE_PAGES[$file])) || $href === $file; ?>
+<li><a href="<?= $href ?>"<?= $active ? ' aria-current="page"' : '' ?>><?= e($label) ?></a></li>
 <?php endforeach; ?>
 </ul></nav>
+<a class="btn donate-btn" href="donate.php">❤ <?= t('donate', 'button_label') ?></a>
 </div></header>
 <main>
 <?php
 }
 
-function page_hero(string $section): void
+function page_hero(string $section, string $p = ''): void
 {
     ?>
-<section class="page-hero"><div class="wrap"><span class="eyebrow"><?= t($section, 'eyebrow') ?></span><h1><?= t($section, 'title') ?></h1>
-<p class="lead"><?= t($section, 'lead') ?></p></div></section>
+<section class="page-hero"><div class="wrap"><span class="eyebrow"><?= t($section, $p . 'eyebrow') ?></span><h1><?= t($section, $p . 'title') ?></h1>
+<p class="lead"><?= t($section, $p . 'lead') ?></p></div></section>
 <?php
+}
+
+/** Tab strip shown on every Get Involved page. */
+function involve_nav(string $file): void
+{
+    echo '<div class="subnav"><div class="wrap">';
+    foreach (INVOLVE_PAGES as $href => $label) {
+        echo '<a href="' . $href . '"' . ($href === $file ? ' aria-current="page"' : '') . '>' . e($label) . '</a>';
+    }
+    echo '</div></div>';
+}
+
+/** Live countdown to a timestamp. Works without JavaScript (shows the numbers at load time). */
+function countdown(int $ts, string $class = ''): string
+{
+    $s = max(0, $ts - time());
+    $parts = ['d' => intdiv($s, 86400), 'h' => intdiv($s % 86400, 3600), 'm' => intdiv($s % 3600, 60), 's' => $s % 60];
+    $labels = ['d' => 'Days', 'h' => 'Hours', 'm' => 'Minutes', 's' => 'Seconds'];
+    $out = '<div class="countdown ' . e($class) . '" data-countdown="' . $ts . '">';
+    foreach ($parts as $k => $n) {
+        $out .= '<div><b data-unit="' . $k . '">' . sprintf('%02d', $n) . '</b><span>' . $labels[$k] . '</span></div>';
+    }
+    return $out . '</div>';
+}
+
+function when_label(array $e): string
+{
+    $ts = $e['_ts'] ?? event_ts($e);
+    $t = (string)($e['time'] ?? '');
+    return date('l, j F Y', $ts) . ($t !== '' ? ' · ' . date('g:i A', $ts) : '');
 }
 
 function cta(): void
@@ -126,7 +169,7 @@ function cta(): void
 <section class="cta"><div class="wrap">
 <h2><?= t('site', 'cta_title') ?></h2>
 <p><?= t('site', 'cta_text') ?></p>
-<div class="actions"><a class="btn light" href="contact.php"><?= t('site', 'cta_button') ?></a></div>
+<div class="actions"><a class="btn light" href="get-involved.php"><?= t('site', 'cta_button') ?></a><a class="btn outline" href="donate.php">❤ <?= t('donate', 'button_label') ?></a></div>
 </div></section>
 <?php
 }
@@ -151,8 +194,14 @@ function foot(): void
     <ul class="flinks"><?php foreach (NAV as $href => $label): ?><li><a href="<?= $href ?>"><?= e($label) ?></a></li><?php endforeach; ?></ul>
   </div>
   <div>
-    <h3>What we do</h3>
-    <ul class="flinks"><?php foreach (v('programs', 'areas') as $a): ?><li><a href="programs.php"><?= e($a['title'] ?? '') ?></a></li><?php endforeach; ?></ul>
+    <h3>Get involved</h3>
+    <ul class="flinks">
+      <li><a href="volunteer.php">Volunteer</a></li>
+      <li><a href="careers.php">Careers</a></li>
+      <li><a href="donate.php">Donate</a></li>
+      <li><a href="event.php">Menstrual Hygiene Run</a></li>
+      <li><a href="contact.php">Contact us</a></li>
+    </ul>
   </div>
   <div>
     <h3>Contact us</h3>
@@ -162,7 +211,7 @@ function foot(): void
       <?php if ($s['email'] !== ''): ?><li><?= icon('mail') ?><a href="mailto:<?= e($s['email']) ?>"><?= e($s['email']) ?></a></li><?php endif; ?>
       <?php if ($s['hours'] !== ''): ?><li><?= icon('clock') ?><span><?= nl2br(e($s['hours'])) ?></span></li><?php endif; ?>
     </ul>
-    <div class="actions" style="margin-top:20px"><a class="btn small" style="color:#fff" href="contact.php"><?= e($s['cta_button']) ?></a></div>
+    <div class="actions" style="margin-top:20px"><a class="btn" href="donate.php">❤ <?= t('donate', 'button_label') ?></a></div>
   </div>
 </div></div>
 <div class="fbar"><div class="wrap">
@@ -170,6 +219,7 @@ function foot(): void
   <a href="#top">Back to top ↑</a>
 </div></div>
 </footer>
+<script src="assets/site.js"></script>
 </body>
 </html>
 <?php

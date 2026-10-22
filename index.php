@@ -7,6 +7,8 @@ $gallery = v('programs', 'gallery');
 $latest = v('news', 'posts');
 usort($latest, fn($a, $b) => strcmp((string)($b['date'] ?? ''), (string)($a['date'] ?? '')));
 $latest = array_slice($latest, 0, 3);
+[$upcoming] = events_split();
+$next = $upcoming[0] ?? null;
 $eventImg = safe_upload_path((string)v('home', 'event_image'));
 ?>
 <section class="hero"><div class="wrap">
@@ -16,7 +18,7 @@ $eventImg = safe_upload_path((string)v('home', 'event_image'));
     <p class="lead"><?= t('home', 'lead') ?></p>
     <?php if (v('site', 'motto') !== ''): ?><p class="motto"><?= t('site', 'motto') ?></p><?php endif; ?>
     <div class="actions">
-      <a class="btn" href="contact.php"><?= t('site', 'cta_button') ?></a>
+      <a class="btn" href="get-involved.php"><?= t('site', 'cta_button') ?></a>
       <a class="btn outline" href="about.php">Our story</a>
     </div>
   </div>
@@ -32,6 +34,15 @@ $eventImg = safe_upload_path((string)v('home', 'event_image'));
 <?php foreach (v('home', 'stats') as $st): ?>
 <div class="stat"><b><?= e($st['value'] ?? '') ?></b><span><?= e($st['label'] ?? '') ?></span></div>
 <?php endforeach; ?>
+</div></div></section>
+<?php endif; ?>
+
+<?php if ($next): ?>
+<section style="padding:48px 0 0"><div class="wrap"><div class="nextbar">
+  <div><span class="eyebrow">Next event</span><h3><?= e($next['title']) ?></h3>
+  <p><?= e(when_label($next)) ?><?= !empty($next['venue']) ? ' · ' . e($next['venue']) : '' ?></p></div>
+  <?= countdown($next['_ts'], 'on-light') ?>
+  <div class="actions" style="margin:0"><a class="btn small" href="events.php">Event details</a><a class="btn small ghost" href="donate.php">❤ Donate</a></div>
 </div></div></section>
 <?php endif; ?>
 

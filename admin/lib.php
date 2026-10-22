@@ -115,9 +115,27 @@ function collect(array $fields, array $post, array $path): array
                 foreach ((array)$raw as $i => $item) {
                     if (!is_array($item)) continue;
                     $row = collect($s['fields'], $item, [...$path, $k, $i]);
-                    if (has_content($row)) $items[] = $row;
+                    $check = $row;
+                    foreach ($s['fields'] as $fk => $fs) if (in_array($fs['type'], ['id', 'select'], true)) unset($check[$fk]);
+                    if (has_content($check)) $items[] = $row;
                 }
                 $out[$k] = $items;
+                break;
+            case 'id':
+                $out[$k] = preg_match('/^[a-f0-9]{6,16}$/', (string)$raw) ? (string)$raw : bin2hex(random_bytes(5));
+                break;
+            case 'select':
+                $opts = $s['options'] ?? [];
+                $out[$k] = isset($opts[(string)$raw]) ? (string)$raw : (string)array_key_first($opts);
+                break;
+            case 'date':
+                $val = trim((string)$raw);
+                $ok = preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $val, $m) && checkdate((int)$m[2], (int)$m[3], (int)$m[1]);
+                $out[$k] = $ok ? $val : '';
+                break;
+            case 'time':
+                $val = trim((string)$raw);
+                $out[$k] = preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $val) ? $val : '';
                 break;
             case 'email':
                 $val = trim((string)$raw);
@@ -145,6 +163,7 @@ function render_field(string $n, string $u, array $s, $val): void
     $hint = isset($s['hint']) ? '<small>' . e($s['hint']) . '</small>' : '';
 
     if ($type === 'heading') { echo "<h3 class=\"group\">$label</h3>"; return; }
+    if ($type === 'id') { echo '<input type="hidden" name="' . e($n) . '" value="' . e((string)$val) . '">'; return; }
 
     if ($type === 'list') {
         echo "<div class=\"fld\"><span class=\"lbl\">$label</span>$hint<div class=\"list\">";
@@ -175,8 +194,12 @@ function render_field(string $n, string $u, array $s, $val): void
         $rows = $s['rows'] ?? ($type === 'lines' ? 4 : 5);
         echo '<textarea name="' . e($n) . '" rows="' . $rows . '" placeholder="' . $ph . '">' . e($text) . '</textarea>';
         if ($type === 'lines') $hint = '<small>One per line.' . (isset($s['hint']) ? ' ' . e($s['hint']) : '') . '</small>';
+    } elseif ($type === 'select') {
+        echo '<select name="' . e($n) . '">';
+        foreach ($s['options'] as $ok => $ol) echo '<option value="' . e((string)$ok) . '"' . ((string)$val === (string)$ok ? ' selected' : '') . '>' . e($ol) . '</option>';
+        echo '</select>';
     } else {
-        $htmlType = in_array($type, ['email', 'url', 'number'], true) ? $type : 'text';
+        $htmlType = in_array($type, ['email', 'url', 'number', 'date', 'time'], true) ? $type : 'text';
         echo '<input type="' . $htmlType . '" name="' . e($n) . '" value="' . e((string)$val) . '" placeholder="' . $ph . '">';
     }
     echo "</label>$hint</div>";
@@ -189,6 +212,11 @@ function list_item(string $n, string $u, array $s, string $i, array $item): void
         render_field("{$n}[$i][$k]", "{$u}[$i][$k]", $sub, $item[$k] ?? ($sub['type'] === 'lines' ? [] : ''));
     }
     echo '</div>';
+}
+
+function new_applications(): int
+{
+    return count(array_filter(read_json(APPS_FILE), fn($a) => ($a['status'] ?? 'new') === 'new'));
 }
 
 function unread_count(): int
