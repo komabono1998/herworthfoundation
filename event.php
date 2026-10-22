@@ -12,4 +12,16 @@ page_hero('event');
 </div>
 <?= media((string)v('event', 'image'), (string)v('event', 'art')) ?>
 </div></section>
+
+<section class="alt"><div class="wrap split" style="align-items:start">
+<div>
+<span class="eyebrow">Latest edition</span>
+<h2><?= t('event', 'latest_title') ?></h2>
+<?= paras((string)v('event', 'latest_text')) ?>
+</div>
+<div class="card">
+<h3>At a glance</h3>
+<ul class="ticks"><?php foreach (v('event', 'latest_facts') as $f): ?><li><?= e($f) ?></li><?php endforeach; ?></ul>
+</div>
+</div></section>
 <?php cta(); foot(); ?>

@@ -6,6 +6,7 @@ const NAV = [
     'about.php'    => 'About',
     'programs.php' => 'What We Do',
     'event.php'    => 'Menstrual Hygiene Run',
+    'news.php'     => 'News',
     'partners.php' => 'Partners',
     'contact.php'  => 'Get Involved',
 ];
@@ -14,6 +15,7 @@ const SOCIALS = [
     'facebook'  => 'Facebook',
     'instagram' => 'Instagram',
     'x'         => 'X',
+    'blog'      => 'Blog',
     'tiktok'    => 'TikTok',
     'youtube'   => 'YouTube',
     'linkedin'  => 'LinkedIn',
@@ -114,7 +116,7 @@ function foot(): void
     </ul>
   </div>
 </div>
-<p class="copy">© <?= date('Y') ?> <?= e($s['name']) ?>. <?= e($s['tagline']) ?>.</p>
+<p class="copy">© <?= date('Y') ?> <?= e($s['name']) ?>. <?= e($s['motto'] !== '' ? $s['motto'] : $s['tagline'] . '.') ?></p>
 </div></footer>
 </body>
 </html>

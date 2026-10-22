@@ -6,6 +6,7 @@ head('index.php', (string)v('home', 'title'));
 <span class="eyebrow"><?= t('home', 'eyebrow') ?></span>
 <h1><?= t('home', 'title') ?></h1>
 <p class="lead"><?= t('home', 'lead') ?></p>
+<?php if (v('site', 'motto') !== ''): ?><p class="motto"><?= t('site', 'motto') ?></p><?php endif; ?>
 <div class="actions"><a class="btn" href="contact.php"><?= t('site', 'cta_button') ?></a><a class="btn outline" href="about.php">Our story</a></div>
 </div></section>
 
@@ -29,7 +30,7 @@ head('index.php', (string)v('home', 'title'));
 
 <section class="alt"><div class="wrap">
 <span class="eyebrow">What we do</span><h2><?= t('home', 'areas_title') ?></h2>
-<div class="grid g4">
+<div class="grid gauto">
 <?php foreach (v('programs', 'areas') as $a): ?>
 <div class="card"><div class="ico"><?= e($a['icon'] ?? '') ?></div><h3><?= e($a['title'] ?? '') ?></h3><p><?= e($a['short'] ?? '') ?></p></div>
 <?php endforeach; ?>
@@ -46,4 +47,24 @@ head('index.php', (string)v('home', 'title'));
 <div class="actions"><a class="btn" href="event.php">About the run</a></div>
 </div>
 </div></section>
+
+<?php
+$latest = v('news', 'posts');
+usort($latest, fn($a, $b) => strcmp((string)($b['date'] ?? ''), (string)($a['date'] ?? '')));
+$latest = array_slice($latest, 0, 2);
+if ($latest): ?>
+<section class="alt"><div class="wrap">
+<span class="eyebrow"><?= t('news', 'eyebrow') ?></span><h2><?= t('news', 'title') ?></h2>
+<div class="grid g2">
+<?php foreach ($latest as $p): $ts = strtotime((string)($p['date'] ?? '')); ?>
+<article class="card post">
+  <?php if ($ts): ?><time datetime="<?= date('Y-m-d', $ts) ?>"><?= date('j F Y', $ts) ?></time><?php endif; ?>
+  <h3><?= e($p['title'] ?? '') ?></h3>
+  <p><?= e($p['summary'] ?? '') ?></p>
+</article>
+<?php endforeach; ?>
+</div>
+<div class="actions"><a class="btn ghost" href="news.php">All news &amp; stories</a></div>
+</div></section>
+<?php endif; ?>
 <?php cta(); foot(); ?>

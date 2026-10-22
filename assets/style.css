@@ -128,3 +128,10 @@ footer li{margin:.4em 0}
 .alert.err{background:#fde8e6;color:#8a1f15}
 .hp{position:absolute;left:-9999px}
 .contact-big li{margin:.7em 0}
+
+/* news & misc */
+.gauto{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.hero .motto{font-family:"Fraunces",serif;font-style:italic;color:var(--gold);margin-top:1em;font-size:1.15rem}
+.post time{display:block;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--coral);margin:12px 0 6px}
+.post .photo{margin-bottom:4px}
+.post p+p{margin-top:.8em}

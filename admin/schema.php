@@ -11,6 +11,7 @@ return [
         '_a' => F('Organisation', 'heading'),
         'name'    => F('Organisation name'),
         'tagline' => F('Tagline'),
+        'motto'   => F('Motto', 'text', ['hint' => 'Shown on the home page and in the footer.']),
         'blurb'   => F('Short description (shown in the footer)', 'textarea', ['rows' => 3]),
         '_b' => F('Contact & address', 'heading'),
         'address'  => F('Address', 'textarea', ['rows' => 3, 'ph' => 'Plot 1, Example Road, Gulu City']),
@@ -22,6 +23,7 @@ return [
         'facebook'  => F('Facebook', 'url', ['ph' => 'https://facebook.com/yourpage']),
         'instagram' => F('Instagram', 'url', ['ph' => 'https://instagram.com/yourhandle']),
         'x'         => F('X (Twitter)', 'url', ['ph' => 'https://x.com/yourhandle']),
+        'blog'      => F('Blog', 'url', ['ph' => 'https://yourblog.blogspot.com']),
         'tiktok'    => F('TikTok', 'url', ['ph' => 'https://tiktok.com/@yourhandle']),
         'youtube'   => F('YouTube', 'url', ['ph' => 'https://youtube.com/@yourchannel']),
         'linkedin'  => F('LinkedIn', 'url', ['ph' => 'https://linkedin.com/company/yourpage']),
@@ -65,6 +67,18 @@ return [
         'female_pct'  => F('Percentage female', 'number', ['hint' => '0–100. The rest is shown as male.']),
         'reach_image' => F('Photo', 'image'),
         'reach_art'   => F('Caption shown when there is no photo'),
+        '_c' => F('Our story', 'heading'),
+        'story_title' => F('Heading'),
+        'story_text'  => F('Story', 'textarea', ['rows' => 9, 'hint' => 'Leave a blank line between paragraphs.']),
+        '_d' => F('Impact numbers', 'heading'),
+        'impact_title' => F('Heading'),
+        'impact' => F('Numbers', 'list', ['item' => 'number', 'fields' => [
+            'value' => F('Number', 'text', ['ph' => '5,000+']),
+            'label' => F('What it means'),
+        ]]),
+        '_e' => F('What we work on', 'heading'),
+        'focus_title' => F('Heading'),
+        'focus' => F('Focus areas', 'lines'),
     ]],
 
     'programs' => ['label' => 'What We Do page', 'icon' => '✿', 'fields' => $hero() + [
@@ -90,6 +104,21 @@ return [
         'button'  => F('Button label'),
         'image'   => F('Photo', 'image'),
         'art'     => F('Caption shown when there is no photo'),
+        '_a' => F('Latest edition', 'heading'),
+        'latest_title' => F('Heading'),
+        'latest_text'  => F('Description', 'textarea', ['rows' => 7, 'hint' => 'Leave a blank line between paragraphs.']),
+        'latest_facts' => F('Key facts', 'lines'),
+    ]],
+
+    'news' => ['label' => 'News & Stories', 'icon' => '📰', 'fields' => $hero() + [
+        'readmore' => F('“Read more” link label'),
+        'posts' => F('Posts', 'list', ['item' => 'post', 'fields' => [
+            'title'   => F('Title'),
+            'date'    => F('Date', 'text', ['ph' => '2026-09-21', 'hint' => 'Format YYYY-MM-DD.']),
+            'summary' => F('Summary', 'textarea', ['rows' => 4]),
+            'image'   => F('Photo (optional)', 'image'),
+            'url'     => F('Link to full story (optional)', 'url', ['ph' => 'https://']),
+        ]]),
     ]],
 
     'partners' => ['label' => 'Partners page', 'icon' => '🤝', 'fields' => $hero() + [
