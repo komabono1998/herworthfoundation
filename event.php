@@ -10,7 +10,7 @@ page_hero('event');
 <?php if (v('event', 'bullets')): ?><ul class="ticks" style="margin-top:16px"><?php foreach (v('event', 'bullets') as $b): ?><li><?= e($b) ?></li><?php endforeach; ?></ul><?php endif; ?>
 <div class="actions"><a class="btn" href="contact.php"><?= t('event', 'button') ?></a></div>
 </div>
-<?= media((string)v('event', 'image'), (string)v('event', 'art')) ?>
+<div class="frame"><?= media((string)v('event', 'image'), (string)v('event', 'art')) ?></div>
 </div></section>
 
 <section class="alt"><div class="wrap split" style="align-items:start">

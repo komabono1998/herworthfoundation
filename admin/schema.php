@@ -38,6 +38,7 @@ return [
         'eyebrow' => F('Small label'),
         'title'   => F('Main heading'),
         'lead'    => F('Intro text', 'textarea', ['rows' => 3]),
+        'hero_image' => F('Main photo', 'image', ['hint' => 'Shown beside the heading. A square or portrait photo works best.']),
         '_b' => F('Key numbers', 'heading'),
         'stats' => F('Numbers', 'list', ['item' => 'number', 'fields' => [
             'value' => F('Number or value', 'text', ['ph' => '10,500+']),
@@ -50,6 +51,12 @@ return [
         'who_art'   => F('Caption shown when there is no photo'),
         '_d' => F('What we do section', 'heading'),
         'areas_title' => F('Heading', 'text', ['hint' => 'The four cards come from What We Do → Areas of work.']),
+        '_f' => F('Reusable pads feature', 'heading'),
+        'feature_eyebrow' => F('Small label'),
+        'feature_title'   => F('Heading'),
+        'feature_text'    => F('Text', 'textarea', ['rows' => 4]),
+        'feature_button'  => F('Button label'),
+        'feature_image'   => F('Photo', 'image'),
         '_e' => F('Annual event teaser', 'heading'),
         'event_title' => F('Heading'),
         'event_text'  => F('Text', 'textarea', ['rows' => 4]),
@@ -70,6 +77,7 @@ return [
         '_c' => F('Our story', 'heading'),
         'story_title' => F('Heading'),
         'story_text'  => F('Story', 'textarea', ['rows' => 9, 'hint' => 'Leave a blank line between paragraphs.']),
+        'story_image' => F('Photo', 'image'),
         '_d' => F('Impact numbers', 'heading'),
         'impact_title' => F('Heading'),
         'impact' => F('Numbers', 'list', ['item' => 'number', 'fields' => [

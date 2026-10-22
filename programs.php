@@ -12,15 +12,10 @@ page_hero('programs');
 <?php endforeach; ?>
 </div></div></section>
 
-<?php if (v('programs', 'gallery')): ?>
+<?php if (($m = mosaic(v('programs', 'gallery'))) !== ''): ?>
 <section class="alt"><div class="wrap">
-<span class="eyebrow">In pictures</span><h2><?= t('programs', 'gallery_title') ?></h2>
-<div class="grid g3">
-<?php foreach (v('programs', 'gallery') as $n => $g): ?>
-<figure class="shot"><?= media((string)($g['image'] ?? ''), (string)($g['caption'] ?? ''), $n % 2 ? '' : 'p') ?>
-<?php if (!empty($g['image']) && !empty($g['caption'])): ?><figcaption><?= e($g['caption']) ?></figcaption><?php endif; ?></figure>
-<?php endforeach; ?>
-</div>
+<div class="sec-head"><span class="eyebrow">In pictures</span><h2><?= t('programs', 'gallery_title') ?></h2></div>
+<?= $m ?>
 </div></section>
 <?php endif; ?>
 <?php cta(); foot(); ?>

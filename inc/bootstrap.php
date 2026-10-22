@@ -70,7 +70,7 @@ function paras(string $text): string
 
 function safe_upload_path(string $p): string
 {
-    return preg_match('#^uploads/[A-Za-z0-9._-]+$#', $p) ? $p : '';
+    return preg_match('#^(uploads|assets/img)/[A-Za-z0-9._-]+$#', $p) ? $p : '';
 }
 
 /** Photo if one was uploaded, otherwise the coloured placeholder tile with a caption. */
@@ -78,7 +78,7 @@ function media(string $image, string $caption, string $class = ''): string
 {
     $image = safe_upload_path($image);
     if ($image !== '') {
-        return '<img class="photo" src="' . e($image) . '" alt="' . e($caption) . '" loading="lazy">';
+        return '<img class="photo ' . e($class) . '" src="' . e($image) . '" alt="' . e($caption) . '" loading="lazy">';
     }
     return '<div class="art ' . e($class) . '">' . e($caption) . '</div>';
 }

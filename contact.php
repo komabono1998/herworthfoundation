@@ -51,11 +51,11 @@ $s = content()['site'];
 </div>
 <div>
 <h2><?= t('contact', 'find_title') ?></h2>
-<ul class="ticks contact-big">
-<?php if ($s['address'] !== ''): ?><li><?= nl2br(e($s['address'])) ?></li><?php endif; ?>
-<?php if ($s['email'] !== ''): ?><li><a href="mailto:<?= e($s['email']) ?>"><?= e($s['email']) ?></a></li><?php endif; ?>
-<?php if ($s['phone'] !== ''): ?><li><a href="tel:<?= e(preg_replace('/[^\d+]/', '', $s['phone'])) ?>"><?= e($s['phone']) ?></a></li><?php endif; ?>
-<?php if ($s['hours'] !== ''): ?><li><?= nl2br(e($s['hours'])) ?></li><?php endif; ?>
+<ul class="contact-big">
+<?php if ($s['address'] !== ''): ?><li><?= icon('pin') ?><span><?= nl2br(e($s['address'])) ?></span></li><?php endif; ?>
+<?php if ($s['email'] !== ''): ?><li><?= icon('mail') ?><a href="mailto:<?= e($s['email']) ?>"><?= e($s['email']) ?></a></li><?php endif; ?>
+<?php if ($s['phone'] !== ''): ?><li><?= icon('phone') ?><a href="tel:<?= e(preg_replace('/[^\d+]/', '', $s['phone'])) ?>"><?= e($s['phone']) ?></a></li><?php endif; ?>
+<?php if ($s['hours'] !== ''): ?><li><?= icon('clock') ?><span><?= nl2br(e($s['hours'])) ?></span></li><?php endif; ?>
 </ul>
 <?php if (social_links() !== ''): ?><div class="socials dark" style="margin-top:18px"><?= social_links() ?></div><?php endif; ?>
 </div>
