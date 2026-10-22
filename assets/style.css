@@ -93,11 +93,38 @@ footer li{margin:.4em 0}
 @media(max-width:860px){
   .g3,.g4,.g2,.split{grid-template-columns:1fr}
   .g4{grid-template-columns:1fr 1fr}
-  .menu-btn{display:block}
-  nav{display:none;position:absolute;top:68px;left:0;right:0;background:var(--cream);border-bottom:1px solid var(--line);padding:10px 20px 18px}
-  nav.open{display:block}
-  nav ul{flex-direction:column}
+  .bar{flex-wrap:wrap;height:auto;padding-top:10px}
+  nav{order:3;width:100%;overflow-x:auto;scrollbar-width:none;padding:6px 0 10px}
+  nav::-webkit-scrollbar{display:none}
+  nav ul{flex-wrap:nowrap;width:max-content}
+  nav a{white-space:nowrap}
   section{padding:52px 0}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 .btn.outline{background:transparent;color:#fff;border-color:#fff}
+
+/* footer layout */
+.fgrid{display:grid;grid-template-columns:1.5fr 1fr 1.2fr 1.4fr;gap:36px}
+.fbrand .brand{color:#fff;margin-bottom:12px}
+.fbrand p{max-width:34ch}
+.socials{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.socials a{padding:6px 14px;border:1px solid #ffffff44;border-radius:99px;font-size:.85rem;text-decoration:none}
+.socials a:hover{background:#fff;color:var(--plum-d);text-decoration:none}
+.socials.dark a{color:var(--plum);border-color:var(--plum)}
+.socials.dark a:hover{background:var(--plum);color:#fff}
+.contact-list li{display:flex;flex-direction:column;margin:.7em 0}
+.contact-list span{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:700}
+@media(max-width:960px){.fgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.fgrid{grid-template-columns:1fr}}
+
+/* photos, partners, alerts */
+.photo{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--r)}
+.shot figcaption{font-size:.9rem;color:var(--muted);margin-top:8px}
+.partner{display:flex;align-items:center;justify-content:center;text-align:center;min-height:120px}
+.partner a{text-decoration:none}
+.plogo{max-height:64px;width:auto;margin:0 auto 10px}
+.alert{padding:12px 16px;border-radius:12px;margin:12px 0;font-size:.95rem}
+.alert.ok{background:#e6f4ea;color:#1e5e32}
+.alert.err{background:#fde8e6;color:#8a1f15}
+.hp{position:absolute;left:-9999px}
+.contact-big li{margin:.7em 0}
