@@ -45,9 +45,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title><?= $setup ? 'Set up admin' : 'Admin login' ?></title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="admin.css">
 </head><body class="login">
 <form class="box" method="post" autocomplete="off">
+<span class="mark" style="background:#1c4fb8;color:#fff;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-weight:800">HW</span>
 <h1><?= t('site', 'name') ?></h1>
 <p><?= $setup ? 'First-time setup: enter your email and choose a password.' : 'Sign in to edit the website.' ?></p>
 <?php if ($error): ?><div class="alert err"><?= e($error) ?></div><?php endif; ?>

@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/../inc/bootstrap.php';
+require_once __DIR__ . '/../inc/layout.php';
+require_once __DIR__ . '/ui.php';
 
 define('ADMIN_FILE', DATA_DIR . '/admin.json');
 define('LOGIN_LOG', DATA_DIR . '/login.json');
@@ -31,11 +33,16 @@ function csrf_check(): void
         exit('Invalid or expired form. Go back, refresh and try again.');
     }
 }
-function flash(string $msg, string $type = 'ok'): void { $_SESSION['flash'][] = [$type, $msg]; }
+function flash(string $msg, string $type = 'ok', string $link = ''): void { $_SESSION['flash'][] = [$type, $msg, $link]; }
 function flashes(): string
 {
     $out = '';
-    foreach ($_SESSION['flash'] ?? [] as [$type, $msg]) $out .= '<div class="alert ' . e($type) . '">' . e($msg) . '</div>';
+    foreach ($_SESSION['flash'] ?? [] as $f) {
+        $link = $f[2] ?? '';
+        $out .= '<div class="alert ' . e($f[0]) . '"><span>' . e($f[1]) . '</span>'
+            . ($link !== '' ? ' <a href="' . e($link) . '" target="_blank" rel="noopener">View page ' . aic('ext') . '</a>' : '')
+            . '<button type="button" class="x" aria-label="Dismiss">×</button></div>';
+    }
     unset($_SESSION['flash']);
     return $out;
 }
@@ -166,14 +173,15 @@ function render_field(string $n, string $u, array $s, $val): void
     if ($type === 'id') { echo '<input type="hidden" name="' . e($n) . '" value="' . e((string)$val) . '">'; return; }
 
     if ($type === 'list') {
-        echo "<div class=\"fld\"><span class=\"lbl\">$label</span>$hint<div class=\"list\">";
+        preg_match('/\[(\w+)\]$/', $n, $lm);
+        echo "<div class=\"fld listfld\"><span class=\"lbl\">$label</span>$hint<div class=\"list\" data-list=\"" . e($lm[1] ?? '') . '">';
         $rows = is_array($val) ? $val : [];
         foreach ($rows as $i => $item) list_item($n, $u, $s, (string)$i, is_array($item) ? $item : []);
         echo '</div>';
         ob_start();
         list_item($n, $u, $s, '__I__', []);
         echo '<template>' . ob_get_clean() . '</template>';
-        echo '<button type="button" class="btn small add">+ Add ' . e($s['item'] ?? 'item') . '</button></div>';
+        echo '<button type="button" class="btn small add">' . aic('plus') . ' Add ' . e($s['item'] ?? 'item') . '</button></div>';
         return;
     }
 
@@ -200,18 +208,31 @@ function render_field(string $n, string $u, array $s, $val): void
         echo '</select>';
     } else {
         $htmlType = in_array($type, ['email', 'url', 'number', 'date', 'time'], true) ? $type : 'text';
-        echo '<input type="' . $htmlType . '" name="' . e($n) . '" value="' . e((string)$val) . '" placeholder="' . $ph . '">';
+        echo '<input type="' . $htmlType . '" name="' . e($n) . '" value="' . e((string)$val) . '" placeholder="' . $ph . '"' . (!empty($s['title_field']) ? ' data-title="1"' : '') . '>';
     }
     echo "</label>$hint</div>";
 }
 
 function list_item(string $n, string $u, array $s, string $i, array $item): void
 {
-    echo '<div class="item"><button type="button" class="rm" title="Remove" aria-label="Remove">×</button>';
+    $isNew = $i === '__I__' || str_starts_with($i, 'n');
+    $titleKey = null;
+    foreach ($s['fields'] as $k => $sub) if ($titleKey === null && $sub['type'] === 'text') $titleKey = $k;
+    $title = $titleKey !== null ? trim((string)($item[$titleKey] ?? '')) : '';
+    $badges = '';
     foreach ($s['fields'] as $k => $sub) {
+        if ($sub['type'] !== 'select') continue;
+        $sv = (string)($item[$k] ?? array_key_first($sub['options']));
+        $badges .= '<span class="badge b-' . e($sv) . '">' . e($sub['options'][$sv] ?? $sv) . '</span>';
+    }
+    echo '<details class="item"' . ($isNew ? ' open' : '') . '><summary><span class="ititle">'
+        . ($title !== '' ? e($title) : 'New ' . e($s['item'] ?? 'item')) . '</span>' . $badges
+        . '<button type="button" class="rm" title="Remove" aria-label="Remove">Remove</button></summary><div class="ibody">';
+    foreach ($s['fields'] as $k => $sub) {
+        $sub['title_field'] = $k === $titleKey;
         render_field("{$n}[$i][$k]", "{$u}[$i][$k]", $sub, $item[$k] ?? ($sub['type'] === 'lines' ? [] : ''));
     }
-    echo '</div>';
+    echo '</div></details>';
 }
 
 function new_applications(): int
